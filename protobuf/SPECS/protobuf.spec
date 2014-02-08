@@ -306,9 +306,10 @@ install -p -m 0644 %{SOURCE2} $RPM_BUILD_ROOT%{emacs_startdir}
 %post compiler -p /sbin/ldconfig
 %postun compiler -p /sbin/ldconfig
 
+%if 0%{?el5}
 %clean
 rm -rf %{buildroot}
-
+%endif
 
 %files
 %defattr(-, root, root, -)
