@@ -128,7 +128,7 @@ Group: Development/Libraries
 Requires: %{name}-devel = %{version}-%{release}
 
 %description lite-static
-This package contains static development libraries built with 
+This package contains static development libraries built with
 optimize_for = LITE_RUNTIME.
 
 The "optimize_for = LITE_RUNTIME" option causes the compiler to generate code
@@ -199,8 +199,6 @@ BuildRequires:    maven-surefire-plugin
 BuildRequires:    maven-antrun-plugin
 Requires:         java
 Requires:         jpackage-utils
-#Requires(post):   jpackage-utils
-#Requires(postun): jpackage-utils
 Conflicts:        %{name}-compiler > %{version}
 Conflicts:        %{name}-compiler < %{version}
 
@@ -253,9 +251,6 @@ popd
 
 %if %{with java}
 pushd java
-#export MAVEN_REPO_LOCAL=$(pwd)/.m2/repository
-#mkdir -p $MAVEN_REPO_LOCAL
-#mvn-jpp -Dmaven.repo.local=$MAVEN_REPO_LOCAL install javadoc:javadoc
 mvn-rpmbuild install javadoc:javadoc
 popd
 %endif
@@ -290,7 +285,6 @@ cp -rp target/site/apidocs %{buildroot}%{_javadocdir}/%{name}
 
 install -d -m 755 %{buildroot}%{_mavenpomdir}
 install -pm 644 pom.xml %{buildroot}%{_mavenpomdir}/JPP-%{name}.pom
-#%add_to_maven_depmap com.google.protobuf %{name}-java %{version} JPP %{name}
 %add_maven_depmap JPP-%{name}.pom %{name}.jar
 popd
 %endif
@@ -312,20 +306,12 @@ install -p -m 0644 %{SOURCE2} $RPM_BUILD_ROOT%{emacs_startdir}
 %post compiler -p /sbin/ldconfig
 %postun compiler -p /sbin/ldconfig
 
-#%if %{with java}
-#%post java
-#%update_maven_depmap
-
-#%postun java
-#%update_maven_depmap
-#%endif
-
 %clean
 rm -rf %{buildroot}
 
 
 %files
-%defattr(-,root,root,-)
+%defattr(-, root, root, -)
 %{_libdir}/libprotobuf.so.*
 %doc CHANGES.txt CONTRIBUTORS.txt COPYING.txt README.txt
 
@@ -395,7 +381,6 @@ rm -rf %{buildroot}
 %{_mavenpomdir}/JPP-%{name}.pom
 %{_mavendepmapfragdir}/%{name}
 %{_javadir}/%{name}.jar
-#%{_javadir}/*
 %doc examples/AddPerson.java examples/ListPeople.java
 
 %files javadoc
