@@ -30,7 +30,13 @@ are in this repo, in the `SOURCES` subdirectory. If you want to build the `RPM` 
 
 and copy them (`cp -p` preserves timestamps) into `~/rpmbuild/SOURCES`.
 
+Finally, download the protocol buffer archive into the `~/rpmbuild/SOURCES` folder:
+
+    $ wget -N http://protobuf.googlecode.com/files/protobuf-2.4.1.tar.bz2
+
 ## Getting the spec file
+The inspiration for building the spec file comes from the one packed into
+[this source RPM](http://yum.aclub.net/pub/linux/centos/6/umask/SRPMS/protobuf-2.4.1-1.el6.src.rpm).
 The spec file is in the `SPECS` subdirectory of this repo.
 Give a look at it, and check the differences w.r.t. the original Fedora file:
 apart from some legacy commands commented out (I should clean them up at some point)
@@ -46,7 +52,13 @@ Go into the `~rpmbuild/SPECS` directory, and validate the spec file:
 
     $ rpmlint protobuf.spec
 
-If you do not get any error (but check the warnings anyhow!), build the `RPM`:
+You should not get any errors (if so, I made something very wrong), but you should get a warning for the URL of the source:
+
+    protobuf.spec: W: invalid-url Source0: http://protobuf.googlecode.com/files/protobuf-2.4.1.tar.bz2 HTTP Error 404: Not Found
+
+It is a false positive (see the [bug report](https://bugzilla.redhat.com/show_bug.cgi?id=767739)).
+
+Now, you can build the `RPM`:
 
     $ rpmbuild -ba -vv protobuf.spec
 
