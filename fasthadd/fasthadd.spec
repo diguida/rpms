@@ -82,6 +82,13 @@ rm -rf %{buildroot}
 %{_bindir}/fastParallelHadd.py*
 
 %changelog
+* Wed Jul 09 2014 Salvatore Di Guida <salvatore.di.guida[at]cern.ch> - 3.0-1
+- Use new ROOT version.
+- Review not needed ROOT package dependencies (root-tree-player requires root-graf3d).
+- Installation requires a version not older than the one used for building (to be investigated further).
+- Better handling of files for build, install and check sections.
+- Use the commit in private repository until not merged in CMSSW.
+
 * Sat Feb 22 2014 Salvatore Di Guida <salvatore.di.guida[at]cern.ch> - 2.1-2
 - Align to a fixed ROOT version.
 - Ported to el6.
