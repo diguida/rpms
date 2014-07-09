@@ -1,12 +1,21 @@
-%define files_for_build fastHadd.cc run_fastHadd_tests.sh test_fastHaddMerge.py fastParallelHadd.py
+%global commit 11e3097b139fbe062a579c0c273098ed98e36010
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+
+%define file_to_build fastHadd.cc
+%define protobuf_message_definition ROOTFilePB.proto
+%define file_for_testing test_fastHaddMerge.py
+%define binary_parallel fastParallelHadd.py
+%define test_driver run_fastHadd_tests.sh
+
+%define binary_file fastHadd
 
 Name:           fasthadd
-Version:        2.1
-Release:        2%{?dist}
+Version:        3.0
+Release:        1%{?dist}
 Summary:        A program to add ProtocolBuffer-formatted ROOT files in a quick way
 License:        GPLv2+
 Group:          Applications/System
-Source0:        https://github.com/rovere/cmssw/archive/%{name}%{version}.tar.gz
+Source0:        https://github.com/diguida/cmssw/archive/%{commit}/%{commit}.tar.gz
 URL:            https://github.com/cms-sw/cmssw
 %if 0%{?el5}
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
@@ -20,21 +29,22 @@ Requires:       root = 5.34.14, root-tree-player = 5.34.14, root-python = 5.34.1
 A program to add ProtocolBuffer-formatted ROOT files in a quick way
 
 %prep
-%setup -q -n cmssw-%{name}%{version}
-
+%setup -q -n cmssw-%{commit}
 
 %build
 mkdir %{name}
 cd %{name}
-for f in %{files_for_build}; do cp %{_builddir}/cmssw-%{name}%{version}/DQMServices/Components/test/${f} .; done
-sed -i -e s#DQMServices/Core/src/ROOTFilePB.pb.h#ROOTFilePB.pb.h# fastHadd.cc
-cp %{_builddir}/cmssw-%{name}%{version}/DQMServices/Core/src/ROOTFilePB.proto .
-protoc -I ./ --cpp_out=./ ROOTFilePB.proto
-g++ -O2 -o fastHadd ROOTFilePB.pb.cc fastHadd.cc `pkg-config --libs protobuf` `root-config --cflags --libs`
-
+cp %{_builddir}/cmssw-%{commit}/DQMServices/Components/bin/%{file_to_build} .
+cp %{_builddir}/cmssw-%{commit}/DQMServices/Core/src/%{protobuf_message_definition} .
+cp %{_builddir}/cmssw-%{commit}/DQMServices/Components/test/%{binary_parallel} .
+cp %{_builddir}/cmssw-%{commit}/DQMServices/Components/test/%{file_for_testing} .
+cp %{_builddir}/cmssw-%{commit}/DQMServices/Components/test/%{test_driver} .
+sed -i -e s#DQMServices/Core/src/ROOTFilePB.pb.h#ROOTFilePB.pb.h# %{file_to_build}
+sed -i -e s#\$\{LOCAL_TEST_DIR\}/##g %{test_driver}
+protoc -I ./ --cpp_out=./ %{protobuf_message_definition}
+g++ -O2 -o %{binary_file} ROOTFilePB.pb.cc %{file_to_build} `pkg-config --libs protobuf` `root-config --cflags --libs`
 
 #make %{?_smp_mflags}
-
 
 %install
 rm -rf %{buildroot}
@@ -45,11 +55,13 @@ cp -p %{name}/fastParallelHadd.py %{buildroot}%{_bindir}/
 %check
 mkdir -p test
 pushd test
-cp ../%{name}/fastHadd .
-for f in %{files_for_build}; do cp %{_builddir}/cmssw-%{name}%{version}/DQMServices/Components/test/${f} .; done
+cp ../%{name}/%{binary_file} .
+cp ../%{name}/%{binary_parallel} .
+cp ../%{name}/%{file_for_testing} .
+cp ../%{name}/%{test_driver} .
 export PATH=./:${PATH}
 echo $PATH
-. ./run_fastHadd_tests.sh
+. ./%{test_driver}
 if [ $? -ne 0 ]; then
   exit $?
 fi
