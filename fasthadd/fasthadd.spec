@@ -1,13 +1,13 @@
 %global commit 11e3097b139fbe062a579c0c273098ed98e36010
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%define file_to_build fastHadd.cc
-%define protobuf_message_definition ROOTFilePB.proto
-%define file_for_testing test_fastHaddMerge.py
-%define binary_parallel fastParallelHadd.py
-%define test_driver run_fastHadd_tests.sh
+%global file_to_build fastHadd.cc
+%global protobuf_message_definition ROOTFilePB.proto
+%global file_for_testing test_fastHaddMerge.py
+%global binary_parallel fastParallelHadd.py
+%global test_driver run_fastHadd_tests.sh
 
-%define binary_file fastHadd
+%global binary_file fastHadd
 
 Name:           fasthadd
 Version:        3.0
