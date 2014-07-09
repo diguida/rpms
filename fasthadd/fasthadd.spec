@@ -21,9 +21,10 @@ URL:            https://github.com/cms-sw/cmssw
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 %endif
 BuildRequires:  pkgconfig
-BuildRequires:  root = 5.34.14, root-physics = 5.34.14, root-graf3d = 5.34.14, root-tree-player = 5.34.14, root-python = 5.34.14
+BuildRequires:  root = 5.34.18, root-tree-player = 5.34.18, root-physics = 5.34.18, root-python = 5.34.18
 BuildRequires:  protobuf-devel >= 2.4.1, protobuf-compiler >= 2.4.1
-Requires:       root = 5.34.14, root-tree-player = 5.34.14, root-python = 5.34.14, protobuf >= 2.4.1
+Requires:       root >= 5.34.18, root-tree-player >= 5.34.18, root-physics >= 5.34.18, root-python >= 5.34.18
+Requires:       protobuf >= 2.4.1
 
 %description
 A program to add ProtocolBuffer-formatted ROOT files in a quick way
