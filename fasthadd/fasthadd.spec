@@ -1,5 +1,4 @@
-%global commit 11e3097b139fbe062a579c0c273098ed98e36010
-%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global commit COMMITHASH
 
 %global file_to_build fastHadd.cc
 %global protobuf_message_definition ROOTFilePB.proto
@@ -11,11 +10,11 @@
 
 Name:           fasthadd
 Version:        3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A program to add ProtocolBuffer-formatted ROOT files in a quick way
 License:        GPLv2+
 Group:          Applications/System
-Source0:        https://github.com/diguida/cmssw/archive/%{commit}/%{commit}.tar.gz
+Source0:        %{name}-%{commit}.tar.gz
 URL:            https://github.com/cms-sw/cmssw
 %if 0%{?el5}
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
@@ -30,18 +29,9 @@ Requires:       protobuf >= 2.4.1
 A program to add ProtocolBuffer-formatted ROOT files in a quick way
 
 %prep
-%setup -q -n cmssw-%{commit}
+%setup -q -n %{name}-%{commit}
 
 %build
-mkdir %{name}
-cd %{name}
-cp %{_builddir}/cmssw-%{commit}/DQMServices/Components/bin/%{file_to_build} .
-cp %{_builddir}/cmssw-%{commit}/DQMServices/Core/src/%{protobuf_message_definition} .
-cp %{_builddir}/cmssw-%{commit}/DQMServices/Components/test/%{binary_parallel} .
-cp %{_builddir}/cmssw-%{commit}/DQMServices/Components/test/%{file_for_testing} .
-cp %{_builddir}/cmssw-%{commit}/DQMServices/Components/test/%{test_driver} .
-sed -i -e s#DQMServices/Core/src/ROOTFilePB.pb.h#ROOTFilePB.pb.h# %{file_to_build}
-sed -i -e s#\$\{LOCAL_TEST_DIR\}/##g %{test_driver}
 protoc -I ./ --cpp_out=./ %{protobuf_message_definition}
 g++ -O2 -o %{binary_file} ROOTFilePB.pb.cc %{file_to_build} `pkg-config --libs protobuf` `root-config --cflags --libs`
 
@@ -50,16 +40,16 @@ g++ -O2 -o %{binary_file} ROOTFilePB.pb.cc %{file_to_build} `pkg-config --libs p
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_bindir}/
-cp -p %{name}/fastHadd %{buildroot}%{_bindir}/
-cp -p %{name}/fastParallelHadd.py %{buildroot}%{_bindir}/
+cp -p fastHadd %{buildroot}%{_bindir}/
+cp -p fastParallelHadd.py %{buildroot}%{_bindir}/
 
 %check
 mkdir -p test
 pushd test
-cp ../%{name}/%{binary_file} .
-cp ../%{name}/%{binary_parallel} .
-cp ../%{name}/%{file_for_testing} .
-cp ../%{name}/%{test_driver} .
+cp ../%{binary_file} .
+cp ../%{binary_parallel} .
+cp ../%{file_for_testing} .
+cp ../%{test_driver} .
 export PATH=./:${PATH}
 echo $PATH
 . ./%{test_driver}
@@ -82,6 +72,9 @@ rm -rf %{buildroot}
 %{_bindir}/fastParallelHadd.py*
 
 %changelog
+* Tue Jul 15 2014 Dmitrijus Bugelskis <dmitrijus.bugelskis[at]cern.ch> - 3.0-2
+- Fix a minor bug in merging.
+
 * Wed Jul 09 2014 Salvatore Di Guida <salvatore.di.guida[at]cern.ch> - 3.0-1
 - Use new ROOT version.
 - Review not needed ROOT package dependencies (root-tree-player requires root-graf3d).

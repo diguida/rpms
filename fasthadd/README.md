@@ -4,6 +4,15 @@ I could not have succeeded in doing that without the [Fedora RPM guide](http://f
 as well as the references therein.
 Please read it: it is useful!
 
+## A shortcut to build the rpm:
+Do:
+	$ rpmdev-setuptree
+
+Checkout cmssw source anywhere (it has to include DQMServices/*) and run:
+	$ ./makeRPM.sh ../../CMSSW_7_1_X_2014-07-15-0200/src/
+
+Wait a bit, and done!.
+
 ## Getting the sources
 If you want to build the `RPM` by yourself, create the `RPM` building directory structure
 
